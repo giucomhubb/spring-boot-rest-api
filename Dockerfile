@@ -1,14 +1,16 @@
-# Usar una imagen de OpenJDK como base
-FROM openjdk:17-jdk-slim
 
-# Establecer el directorio de trabajo en el contenedor
+FROM maven:3.8.5-openjdk-17-slim
+
+
 WORKDIR /app
 
-# Copiar el archivo JAR desde la carpeta target
-COPY target/*.jar app.jar
+COPY pom.xml ./
+RUN mvn dependency:go-offline -B
 
-# Exponer el puerto donde corre la aplicación (8080 por defecto en Spring Boot)
-EXPOSE 8080
 
-# Comando para ejecutar la aplicación
-CMD ["java", "-jar", "app.jar"]
+COPY src ./src
+
+RUN mvn install -DskipTests
+
+# Comando de inicio
+CMD ["mvn", "spring-boot:run"]
